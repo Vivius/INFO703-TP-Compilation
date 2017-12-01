@@ -36,7 +36,8 @@ terminal Integer ENTIER;
 terminal String IDENT, CST;
 
 /* non terminaux */
-non terminal liste_expr, expr;
+non terminal Arbre liste_expr;
+non terminal Arbre expr;
 non terminal Arbre expression ;
 
 /* priorités */
@@ -50,12 +51,12 @@ precedence left MOINS_UNAIRE;
 
 /* grammaire */
 // on a une liste d'expressions (avec au moins une expression)
-liste_expr	::= expr liste_expr 
+liste_expr	::= expr:e1 liste_expr:e2  {: RESULT = new Arbre(Type.SEMI, e1, e2); :}
 			  | expr:e                 {: RESULT=e; :}
 			  ;
 
 // chaque expression arithmetique est terminee par un point virgule (SEMI)
-expr 		::= expression:e SEMI:pv   {: if (! erreur) System.out.println("Ligne "+(pvleft+1)+", Colonne "+(pvright+1)+" : Eval = "+e); erreur = false; :}
+expr 		::= expression:e SEMI:pv   {: RESULT = e; if (! erreur) System.out.println("Ligne "+(pvleft+1)+", Colonne "+(pvright+1)+" : Eval = "+e); erreur = false; :}
 			  | error SEMI			   {: erreur = false; :}
 			  ;
 
