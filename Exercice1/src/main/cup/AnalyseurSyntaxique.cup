@@ -56,7 +56,7 @@ liste_expr	::= expr:e1 liste_expr:e2  {: RESULT = new Arbre(Type.SEMI, e1, e2); 
 			  ;
 
 // chaque expression arithmetique est terminee par un point virgule (SEMI)
-expr 		::= expression:e SEMI:pv   {: RESULT = e; if (! erreur) System.out.println("Ligne "+(pvleft+1)+", Colonne "+(pvright+1)+" : Eval = "+e); erreur = false; :}
+expr 		::= expression:e SEMI:pv   {: RESULT = e; /* if (! erreur) System.out.println("Ligne "+(pvleft+1)+", Colonne "+(pvright+1)+" : Eval = "+e); */ erreur = false; :}
 			  | error SEMI			   {: erreur = false; :}
 			  ;
 
@@ -81,8 +81,8 @@ expression 	::= ENTIER:e                                                {: RESUL
                                                                            else if (e2.getType().equals(Type.ENTIER))       {
                                                                                 if(((FeuilleInteger) e2).getValeur() == 0)
                                                                                     { RESULT = new Arbre(Type.ERROR); erreur=true; System.err.println("Ligne "+(e2left+1)+", Colonne "+(e2right+1)+" : Erreur division par zero"); }
-                                                                                else RESULT = new Arbre(Type.DIV, e1, e2);  }
-                                                                           else RESULT = new Arbre(Type.DIV, e1, e2); :}
+                                                                                else RESULT = new Arbre(Type.MOD, e1, e2);  }
+                                                                           else RESULT = new Arbre(Type.MOD, e1, e2); :}
 
 			  | PAR_G expression:e PAR_D                                {: RESULT = e ; :}
 			  | LET IDENT:i EQUALS expression:e                         {: RESULT = new Arbre(Type.LET, new FeuilleString(i, Type.IDENT), e); :}

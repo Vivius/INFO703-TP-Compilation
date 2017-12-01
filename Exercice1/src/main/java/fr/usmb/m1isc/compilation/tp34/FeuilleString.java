@@ -5,6 +5,7 @@ public class FeuilleString extends Arbre{
 
     public FeuilleString(String valeur, Type t) {
         super(t);
+        this.estFeuille = true;
         this.valeur = valeur;
     }
 
