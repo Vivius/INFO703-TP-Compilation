@@ -1,0 +1,96 @@
+/* package et imports */
+package fr.usmb.m1isc.compilation.tp34;
+import java_cup.runtime.Symbol;
+
+/* inclusion du code */
+
+action code {: 
+    // pour utilisation dans les actions (classe action)
+	private boolean erreur = false;
+:};
+
+ 
+parser code {:
+    // pour le parser (redefinition de la methode reportant les erreurs d'analyse)
+  public void report_error(String message, Object info) {
+ 	String m = "";
+ 	if (info instanceof java_cup.runtime.Symbol) {
+ 	    Symbol s = ((Symbol) info); 	
+ 		if (s != null && s.left >= 0 ) {
+ 			/* Ajoute le numero de ligne  et de colonne*/
+ 			m =  "Ligne " + (s.left+1) + ", Colonne " + (s.right+1) + " : ";
+ 			}
+ 		}
+ 	m = m + message;
+    System.err.println(m);
+    }
+:};
+
+ init with {:
+    //	initialisation du parser
+:};
+
+/* symboles terminaux */
+terminal PLUS, MOINS, MOINS_UNAIRE, MUL, DIV, MOD, PAR_G, PAR_D, SEMI, ERROR, EQUALS, LET, IF, THEN, ELSE, WHILE, DO, NOT, AND, OR, INF, INF_EQUALS, INPUT, NIL;
+terminal Integer ENTIER;
+terminal String IDENT, CST;
+
+/* non terminaux */
+non terminal liste_expr, expr;
+non terminal Arbre expression ;
+
+/* priorités */
+precedence left OR;
+precedence left AND;
+precedence left NOT;
+precedence left EQUALS, INF, INF_EQUALS;
+precedence left PLUS, MOINS;
+precedence left MUL, DIV, MOD;
+precedence left MOINS_UNAIRE;
+
+/* grammaire */
+// on a une liste d'expressions (avec au moins une expression)
+liste_expr	::= expr liste_expr 
+			  | expr:e                 {: RESULT=e; :}
+			  ;
+
+// chaque expression arithmetique est terminee par un point virgule (SEMI)
+expr 		::= expression:e SEMI:pv   {: if (! erreur) System.out.println("Ligne "+(pvleft+1)+", Colonne "+(pvright+1)+" : Eval = "+e); erreur = false; :}
+			  | error SEMI			   {: erreur = false; :}
+			  ;
+
+expression 	::= ENTIER:e                                                {: RESULT = new FeuilleInteger(e, Type.ENTIER) ; :}
+              | IDENT:e                                                 {: RESULT = new FeuilleString(e, Type.IDENT); :}
+              | CST:e                                                   {: RESULT = new FeuilleString(e, Type.CST); :}
+              | NIL                                                     {: RESULT = new Arbre(Type.NIL); :}
+              | INPUT                                                   {: RESULT = new Arbre(Type.INPUT); :}
+			  | expression:e1 PLUS expression:e2                        {: RESULT = new Arbre(Type.PLUS, e1, e2) ; :}
+			  | expression:e1 MOINS expression:e2                       {: RESULT = new Arbre(Type.MOINS, e1, e2) ; :}
+              | MOINS expression:e   	                                {: RESULT = new Arbre(Type.MOINS_UNAIRE, e, null) ; :} 	%prec MOINS_UNAIRE
+			  | expression:e1 MUL expression:e2                         {: RESULT = new Arbre(Type.MUL, e1, e2); :}
+
+              | expression:e1 DIV expression:e2                         {: if (erreur) RESULT = new Arbre(Type.ERROR);
+                                                                           else if (e2.getType().equals(Type.ENTIER))       {
+                                                                                if(((FeuilleInteger) e2).getValeur() == 0)
+                                                                                    { RESULT = new Arbre(Type.ERROR); erreur=true; System.err.println("Ligne "+(e2left+1)+", Colonne "+(e2right+1)+" : Erreur division par zero"); }
+                                                                                else RESULT = new Arbre(Type.DIV, e1, e2);  }
+                                                                           else RESULT = new Arbre(Type.DIV, e1, e2); :}
+
+              | expression:e1 MOD expression:e2                         {: if (erreur) RESULT = new Arbre(Type.ERROR);
+                                                                           else if (e2.getType().equals(Type.ENTIER))       {
+                                                                                if(((FeuilleInteger) e2).getValeur() == 0)
+                                                                                    { RESULT = new Arbre(Type.ERROR); erreur=true; System.err.println("Ligne "+(e2left+1)+", Colonne "+(e2right+1)+" : Erreur division par zero"); }
+                                                                                else RESULT = new Arbre(Type.DIV, e1, e2);  }
+                                                                           else RESULT = new Arbre(Type.DIV, e1, e2); :}
+
+			  | PAR_G expression:e PAR_D                                {: RESULT = e ; :}
+			  | LET IDENT:i EQUALS expression:e                         {: RESULT = new Arbre(Type.LET, new FeuilleString(i, Type.IDENT), e); :}
+			  | IF expression:cond THEN expression:t ELSE expression:f  {: RESULT = new Arbre(Type.IF, new Arbre(Type.CONDITION, cond, new Arbre(Type.THEN, t, f)), null); :}
+			  | WHILE expression:cond DO expression:d                   {: RESULT = new Arbre(Type.WHILE, cond, d); :}
+			  | expression:e1 INF expression:e2                         {: RESULT = new Arbre(Type.INF, e1, e2); :}
+			  | expression:e1 INF_EQUALS expression:e2                  {: RESULT = new Arbre(Type.INF_EQUALS, e1, e2); :}
+			  | expression:e1 EQUALS expression:e2                      {: RESULT = new Arbre(Type.EQUALS, e1, e2); :}
+			  | expression:e1 AND expression:e2                         {: RESULT = new Arbre(Type.AND, e1, e2); :}
+			  | expression:e1 OR expression:e2                          {: RESULT = new Arbre(Type.OR, e1, e2); :}
+			  | NOT expression:e                                        {: RESULT = new Arbre(Type.NOT, e, null); :}
+			  ;
