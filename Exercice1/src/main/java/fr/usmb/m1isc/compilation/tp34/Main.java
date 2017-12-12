@@ -22,8 +22,6 @@ public class Main {
 		System.out.println(arbre);
 
 		GeneratorAsm asm = new GeneratorAsm(arbre);
-		//asm.detectVars(arbre);
-		asm.makeCode(arbre);
-		System.out.println(asm.getCode());
+		System.out.println(asm.generateAsm());
 	}
 }
