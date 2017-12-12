@@ -35,6 +35,14 @@ public class Arbre {
         return type;
     }
 
+    public Arbre getGauche() {
+        return gauche;
+    }
+
+    public Arbre getDroit() {
+        return droit;
+    }
+
     @Override
     public String toString() {
         String type = this.type.toString();

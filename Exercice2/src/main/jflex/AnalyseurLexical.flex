@@ -38,6 +38,7 @@ or          = "OR"|"or"
 input       = "INPUT"|"input"
 cst         = "CST"|"cst"
 nil         = "NIL"|"nil"
+outout      = "OUTPUT"|"output"
 
 %% 
 /* ------------------------Section des Regles Lexicales----------------------*/
@@ -55,6 +56,7 @@ nil         = "NIL"|"nil"
 {or}            { return new Symbol(sym.OR, yyline, yycolumn) ;}
 {cst}           { return new Symbol(sym.CST, yyline, yycolumn, new String(yytext())) ;}
 {input}         { return new Symbol(sym.INPUT, yyline, yycolumn) ;}
+{outout}        { return new Symbol(sym.OUTPUT, yyline, yycolumn) ;}
 {nil}           { return new Symbol(sym.NIL, yyline, yycolumn) ;}
 "<"             { return new Symbol(sym.INF, yyline, yycolumn) ;}
 "<="            { return new Symbol(sym.INF_EQUALS, yyline, yycolumn) ;}
