@@ -2,10 +2,9 @@ package fr.usmb.m1isc.compilation.tp34;
 
 import java_cup.runtime.Symbol;
 
-import javax.net.ssl.SSLContext;
 import java.io.FileReader;
 import java.io.InputStreamReader;
-import java.util.Stack;
+import java.nio.file.Paths;
 
 public class Main {
 
@@ -23,5 +22,6 @@ public class Main {
 
 		GeneratorAsm asm = new GeneratorAsm(arbre);
 		System.out.println(asm.generateAsm());
+		asm.saveAsmFile(Paths.get("D:\\Java\\Scolaire\\Master 1\\INFO703_TP3-4\\generated.asm"));
 	}
 }

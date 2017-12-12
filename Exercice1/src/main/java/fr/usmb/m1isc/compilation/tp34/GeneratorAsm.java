@@ -1,5 +1,8 @@
 package fr.usmb.m1isc.compilation.tp34;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +17,11 @@ public class GeneratorAsm {
         this.code = new ArrayList<>();
     }
 
+    /**
+     * Détecte l'ensemble des variables du programme.
+     *
+     * @param arbre Arbre
+     */
     private void detectVars(Arbre arbre) {
         if(arbre != null) {
             detectVars(arbre.getGauche());
@@ -26,6 +34,12 @@ public class GeneratorAsm {
         }
     }
 
+    /**
+     * Génère le code assembleur d'une façon récursive.
+     * L'arbre passé en paramètre doit être la racine.
+     *
+     * @param arbre Arbre
+     */
     private void makeCode(Arbre arbre) {
         if(arbre != null) {
             switch (arbre.getType())
@@ -43,6 +57,7 @@ public class GeneratorAsm {
                     makeCode(arbre.getDroit());
                     code.add("mov " + ((FeuilleString)arbre.getGauche()).getValeur() + ", eax");
                     break;
+
                 case MUL:
                     makeCode(arbre.getGauche());
                     code.add("push eax");
@@ -58,6 +73,24 @@ public class GeneratorAsm {
                     code.add("div ebx, eax");
                     code.add("mov eax, ebx");
                     break;
+
+                case PLUS:
+                    makeCode(arbre.getGauche());
+                    code.add("push eax");
+                    makeCode(arbre.getDroit());
+                    code.add("pop ebx");
+                    code.add("add eax, ebx");
+                    break;
+
+                case MOINS:
+                    makeCode(arbre.getGauche());
+                    code.add("push eax");
+                    makeCode(arbre.getDroit());
+                    code.add("pop ebx");
+                    code.add("sub ebx, eax");
+                    code.add("mov eax, ebx");
+                    break;
+
                 case SEMI:
                     makeCode(arbre.getGauche());
                     makeCode(arbre.getDroit());
@@ -66,7 +99,14 @@ public class GeneratorAsm {
         }
     }
 
+    /**
+     * Permet de générer l'ensemble du code assembleur.
+     *
+     * @return String
+     */
     public String generateAsm() {
+        vars.clear();
+        code.clear();
         detectVars(arbre);
         makeCode(arbre);
         String asm = "";
@@ -84,22 +124,22 @@ public class GeneratorAsm {
         return asm;
     }
 
-    // Accesseurs
-
-    public Arbre getArbre() {
-        return arbre;
-    }
-
-    public List<String> getVars() {
-        return vars;
-    }
-
-    public List<String> getCode() {
-        return code;
+    /**
+     * Permet d'enregistrer le fichier assembleur résultant de l'arbre synthaxique.
+     *
+     * @param chemin Path
+     * @throws IOException
+     */
+    public void saveAsmFile(Path chemin) throws IOException {
+        Files.write(chemin, generateAsm().getBytes());
     }
 
     @Override
     public String toString() {
-        return super.toString();
+        return "GeneratorAsm{" +
+                "arbre=" + arbre +
+                ", vars=" + vars +
+                ", code=" + code +
+                '}';
     }
 }

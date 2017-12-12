@@ -5,7 +5,6 @@ public class FeuilleInteger extends Arbre{
 
     public FeuilleInteger(int valeur, Type t) {
         super(t);
-        this.estFeuille = true;
         this.valeur = valeur;
     }
 

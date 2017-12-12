@@ -4,7 +4,6 @@ package fr.usmb.m1isc.compilation.tp34;
 public class Arbre {
     protected Type type;
     protected Arbre gauche, droit;
-    protected boolean estFeuille;
 
     // CONSTRUCTEURS
 
@@ -15,7 +14,6 @@ public class Arbre {
      */
     public Arbre(Type t) {
         type = t;
-        estFeuille = false;
     }
 
     /**
@@ -43,10 +41,6 @@ public class Arbre {
 
     public Arbre getDroit() {
         return droit;
-    }
-
-    public boolean EstFeuille() {
-        return estFeuille;
     }
 
     @Override
