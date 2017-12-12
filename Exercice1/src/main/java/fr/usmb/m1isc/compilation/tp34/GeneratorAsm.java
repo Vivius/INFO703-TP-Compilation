@@ -73,7 +73,6 @@ public class GeneratorAsm {
                     code.add("div ebx, eax");
                     code.add("mov eax, ebx");
                     break;
-
                 case PLUS:
                     makeCode(arbre.getGauche());
                     code.add("push eax");
@@ -81,7 +80,6 @@ public class GeneratorAsm {
                     code.add("pop ebx");
                     code.add("add eax, ebx");
                     break;
-
                 case MOINS:
                     makeCode(arbre.getGauche());
                     code.add("push eax");
@@ -89,6 +87,16 @@ public class GeneratorAsm {
                     code.add("pop ebx");
                     code.add("sub ebx, eax");
                     code.add("mov eax, ebx");
+                    break;
+                case MOD:
+                    makeCode(arbre.getGauche());
+                    code.add("push eax");
+                    makeCode(arbre.getDroit());
+                    code.add("pop ebx");
+                    code.add("mov ecx, eax");
+                    code.add("div ecx, ebx");
+                    code.add("mul ecx, ebx");
+                    code.add("sub eax, ecx");
                     break;
 
                 case SEMI:
