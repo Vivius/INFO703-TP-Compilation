@@ -67,6 +67,10 @@ public class GeneratorAsm {
                     break;
 
                 // Expressions
+                case SEMI:
+                    makeCode(arbre.getGauche());
+                    makeCode(arbre.getDroit());
+                    break;
                 case LET :
                     makeCode(arbre.getDroit());
                     code.add("mov " + ((FeuilleString)arbre.getGauche()).getValeur() + ", eax");
@@ -115,40 +119,119 @@ public class GeneratorAsm {
                     break;
 
                 // Opérateurs booléens
-                case INF:
-                    int infID = generateNewId();
+                case IF:
+                    int ifID = generateNewId();
+                    // If FALSE
+                    makeCode(arbre.getGauche());
+                    code.add("jz ELSE_" + ifID);
+                    // If TRUE
+                    makeCode(arbre.getDroit().getGauche());
+                    code.add("jmp END_IF_" + ifID);
+                    // END
+                    code.add("ELSE_" + ifID + ":");
+                    makeCode(arbre.getDroit().getDroit());
+                    code.add("END_IF_" + ifID + ":");
+                    break;
 
+                case AND:
+                    int andID = generateNewId();
+                    // FALSE CASE
+                    makeCode(arbre.getGauche());
+                    code.add("jz END_AND_" + andID);
+                    // TRUE CASE
+                    makeCode(arbre.getDroit());
+                    // END
+                    code.add("END_AND_" + andID+ ":");
+                    break;
+
+                case EQUALS:
+                    int eqID = generateNewId();
+
+                    // Interprétation des expressions gauche et droite du EQUALS.
                     makeCode(arbre.getGauche());
                     code.add("push eax");
                     makeCode(arbre.getDroit());
                     code.add("pop ebx");
 
+                    // Exécution du EQUALS avec une soustraction.
                     code.add("sub eax, ebx");
-                    code.add("jle faux_gt_" + infID);
+
+                    // FALSE CASE
+                    code.add("jnz FALSE_EQ_" + eqID);
+                    // TRUE CASE
+                    code.add("mov eax, 1");
+                    code.add("jmp END_EQ" + eqID);
+                    // ENDS
+                    code.add("FALSE_EQ_" + eqID + ":");
+                    code.add("mov eax, 0");
+                    code.add("END_EQ" + eqID + ":");
+                    break;
+
+                case INF:
+                    int infID = generateNewId();
+
+                    // Interprétation des expressions gauche et droite du INF.
+                    makeCode(arbre.getGauche());
+                    code.add("push eax");
+                    makeCode(arbre.getDroit());
+                    code.add("pop ebx");
+
+                    // Exécution du INF avec une soustraction.
+                    code.add("sub eax, ebx");
+                    code.add("jle faux_gt_" + infID); // Si valDroite (eax) - valGauche (ebx) <= 0 on retourne faux.
+
+                    // On lance l'exécution du code suivant si INF est vrai. On place 1 dans eax pour que le flag ZF reste à 0.
                     code.add("mov eax, 1");
                     code.add("jmp sortie_gt_" + infID);
 
+                    // Code exécuté si le INF est faux. On place 0 dans eax pour activer le flag ZF.
                     code.add("faux_gt_" + infID + ":");
                     code.add("mov eax, 0");
+
+                    // Code exécuté si le INF est vrai. Le code des noeuds parents sera généré...
                     code.add("sortie_gt_" + infID + ":");
+                    break;
+
+                case INF_EQUALS:
+                    int infEqID = generateNewId();
+
+                    // Interprétation des expressions gauche et droite du INF.
+                    makeCode(arbre.getGauche());
+                    code.add("push eax");
+                    makeCode(arbre.getDroit());
+                    code.add("pop ebx");
+
+                    // Exécution du INF avec une soustraction.
+                    code.add("sub eax, ebx");
+                    code.add("jl faux_gteq_" + infEqID); // Si valDroite (eax) - valGauche (ebx) < 0 on retourne faux.
+
+                    // On lance l'exécution du code suivant si INF est vrai. On place 1 dans eax pour que le flag ZF reste à 0.
+                    code.add("mov eax, 1");
+                    code.add("jmp sortie_gteq_" + infEqID);
+
+                    // Code exécuté si le INF est faux. On place 0 dans eax pour activer le flag ZF.
+                    code.add("faux_gteq_" + infEqID + ":");
+                    code.add("mov eax, 0");
+
+                    // Code exécuté si le INF est vrai. Le code des noeuds parents sera généré...
+                    code.add("sortie_gteq_" + infEqID + ":");
                     break;
 
                 // Boucles
                 case WHILE:
                     int whileID = generateNewId();
+
+                    // Début du while et génération du code correspondant à la condition (fils gauche)
                     code.add("debut_while_" + whileID + ":");
                     makeCode(arbre.getGauche());
 
+                    // Ecriture du corps de la boucle. S'exécute tant que ZF est différent de 1.
                     code.add("jz sortie_while_" + whileID);
                     makeCode(arbre.getDroit());
                     code.add("jmp debut_while_" + whileID);
 
+                    // Code exécuté après l'exécution de la boucle.
                     code.add("sortie_while_" + whileID + ":");
-                    break;
-
-                case SEMI:
-                    makeCode(arbre.getGauche());
-                    makeCode(arbre.getDroit());
                     break;
             }
         }

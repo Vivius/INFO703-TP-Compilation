@@ -14,9 +14,7 @@ public enum Type {
     EQUALS,
     IF,
     WHILE,
-    DO,
     THEN,
-    ELSE,
     NOT,
     AND,
     OR,
@@ -26,8 +24,5 @@ public enum Type {
     OUTPUT,
     CST,
     NIL,
-    CONDITION,
-    TRUE,
-    FALSE,
     ERROR
 }
