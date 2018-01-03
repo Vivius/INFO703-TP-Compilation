@@ -144,6 +144,18 @@ public class GeneratorAsm {
                     code.add("END_AND_" + andID+ ":");
                     break;
 
+                case OR:
+                    int orID = generateNewId();
+
+                    // TRUE CASE
+                    makeCode(arbre.getGauche());
+                    code.add("jnz END_OR_" + orID);
+                    // TRUE CASE
+                    makeCode(arbre.getDroit());
+                    // END
+                    code.add("END_OR_" + orID + ":");
+                    break;
+
                 case EQUALS:
                     int eqID = generateNewId();
 
@@ -165,6 +177,21 @@ public class GeneratorAsm {
                     code.add("FALSE_EQ_" + eqID + ":");
                     code.add("mov eax, 0");
                     code.add("END_EQ" + eqID + ":");
+                    break;
+
+                case NOT:
+                    int notID = generateNewId();
+
+                    makeCode(arbre.getGauche());
+                    // FALSE CASE
+                    code.add("jz TRUE_NOT_" + notID);
+                    code.add("mov eax, 0");
+                    code.add("jmp END_NOT_" + notID);
+                    // TRUE CASE
+                    code.add("TRUE_NOT_" + notID + ":");
+                    code.add("mov eax, 1");
+                    // END
+                    code.add("END_NOT_" + notID + ":");
                     break;
 
                 case INF:
