@@ -52,7 +52,7 @@ precedence left MOINS_UNAIRE;
 /* grammaire */
 // on a une liste d'expressions (avec au moins une expression)
 liste_expr	::= expr:e1 liste_expr:e2  {: RESULT = new Arbre(Type.SEMI, e1, e2); :}
-			  | expr:e                 {: RESULT=e; :}
+			  | expr:e                 {: RESULT = e; :}
 			  ;
 
 // chaque expression arithmetique est terminee par un point virgule (SEMI)
@@ -91,7 +91,7 @@ expression 	::= ENTIER:e                                                {: RESUL
 			  | LET IDENT:i EQUALS expression:e                         {: RESULT = new Arbre(Type.LET, new FeuilleString(i, Type.IDENT), e); :}
 
 			  | IF expression:cond THEN expression:t ELSE expression:f  {: RESULT = new Arbre(Type.IF, new Arbre(Type.CONDITION, cond, new Arbre(Type.THEN, t, f)), null); :}
-			  | WHILE expression:cond DO expression:d                   {: RESULT = new Arbre(Type.WHILE, cond, d); :}
+			  | WHILE expression:cond DO PAR_G liste_expr:d PAR_D       {: RESULT = new Arbre(Type.WHILE, cond, d); :}
 
 			  | expression:e1 INF expression:e2                         {: RESULT = new Arbre(Type.INF, e1, e2); :}
 			  | expression:e1 INF_EQUALS expression:e2                  {: RESULT = new Arbre(Type.INF_EQUALS, e1, e2); :}

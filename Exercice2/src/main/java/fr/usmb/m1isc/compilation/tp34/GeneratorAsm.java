@@ -10,11 +10,17 @@ public class GeneratorAsm {
     private Arbre arbre;
     private List<String> vars;
     private List<String> code;
+    private int id;
 
     public GeneratorAsm(Arbre arbre) {
         this.arbre = arbre;
         this.vars = new ArrayList<>();
         this.code = new ArrayList<>();
+    }
+
+    private int generateNewId() {
+        id++;
+        return id;
     }
 
     /**
@@ -28,8 +34,7 @@ public class GeneratorAsm {
             detectVars(arbre.getDroit());
             if(arbre.getType().equals(Type.LET)) {
                 String var = ((FeuilleString)arbre.getGauche()).getValeur();
-                //System.out.println(var);
-                vars.add(var);
+                if(!vars.contains(var)) vars.add(var);
             }
         }
     }
@@ -111,18 +116,35 @@ public class GeneratorAsm {
 
                 // Opérateurs booléens
                 case INF:
+                    int infID = generateNewId();
+
                     makeCode(arbre.getGauche());
                     code.add("push eax");
                     makeCode(arbre.getDroit());
                     code.add("pop ebx");
+
                     code.add("sub eax, ebx");
-                    code.add("jle faux_gt_1");
+                    code.add("jle faux_gt_" + infID);
                     code.add("mov eax, 1");
-                    code.add("sortie_gt_1");
-                    code.add("faux_gt_1:"); //SANS TABULATION
+                    code.add("jmp sortie_gt_" + infID);
+
+                    code.add("faux_gt_" + infID + ":");
                     code.add("mov eax, 0");
-                    code.add("sortie_gt_1:");//SANS TABULATION
-                    code.add("jz sortie_while_1");
+                    code.add("sortie_gt_" + infID + ":");
+                    break;
+
+                // Boucles
+                case WHILE:
+                    int whileID = generateNewId();
+                    code.add("debut_while_" + whileID + ":");
+                    makeCode(arbre.getGauche());
+
+                    code.add("jz sortie_while_" + whileID);
+                    makeCode(arbre.getDroit());
+                    code.add("jmp debut_while_" + whileID);
+
+                    code.add("sortie_while_" + whileID + ":");
+                    break;
 
                 case SEMI:
                     makeCode(arbre.getGauche());
@@ -138,6 +160,7 @@ public class GeneratorAsm {
      * @return String
      */
     public String generateAsm() {
+        id = 0;
         vars.clear();
         code.clear();
         detectVars(arbre);

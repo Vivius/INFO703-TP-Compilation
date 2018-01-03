@@ -22,6 +22,7 @@ public class Main {
 
 		GeneratorAsm asm = new GeneratorAsm(arbre);
 		System.out.println(asm.generateAsm());
-		asm.saveAsmFile(Paths.get("D:\\Java\\Scolaire\\Master 1\\INFO703_TP3-4\\generated.asm"));
+		// asm.saveAsmFile(Paths.get("D:\\Java\\Scolaire\\Master 1\\INFO703_TP3-4\\generated.asm"));
+		asm.saveAsmFile(Paths.get("S:\\Java\\Scolaire\\M1_INFO\\INFO703_TP3-4\\generated.asm"));
 	}
 }
