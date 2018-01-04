@@ -18,6 +18,11 @@ public class GeneratorAsm {
         this.code = new ArrayList<>();
     }
 
+    /**
+     * Permet de générer un identifiant unique à chaque appel.
+     *
+     * @return int
+     */
     private int generateNewId() {
         id++;
         return id;
@@ -49,7 +54,7 @@ public class GeneratorAsm {
         if(arbre != null) {
             switch (arbre.getType())
             {
-                // Feuilles
+                // Feuilles (valeurs élémentaires)
                 case ENTIER :
                     code.add("mov eax, " + ((FeuilleInteger)arbre).getValeur());
                     break;

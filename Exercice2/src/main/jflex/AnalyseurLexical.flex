@@ -21,7 +21,7 @@ import java_cup.runtime.Symbol;
 
 /* definitions regulieres */
 
-variable    = [a-zA-Z]+
+variable    = [a-zA-Z][0-9a-zA-Z]*
 chiffre 	= [0-9]
 espace 		= \s+|\t+
 mod 		= "mod"|"MOD"
@@ -38,7 +38,7 @@ or          = "OR"|"or"
 input       = "INPUT"|"input"
 cst         = "CST"|"cst"
 nil         = "NIL"|"nil"
-outout      = "OUTPUT"|"output"
+output      = "OUTPUT"|"output"
 
 %% 
 /* ------------------------Section des Regles Lexicales----------------------*/
@@ -56,7 +56,7 @@ outout      = "OUTPUT"|"output"
 {or}            { return new Symbol(sym.OR, yyline, yycolumn) ;}
 {cst}           { return new Symbol(sym.CST, yyline, yycolumn, new String(yytext())) ;}
 {input}         { return new Symbol(sym.INPUT, yyline, yycolumn) ;}
-{outout}        { return new Symbol(sym.OUTPUT, yyline, yycolumn) ;}
+{output}        { return new Symbol(sym.OUTPUT, yyline, yycolumn) ;}
 {nil}           { return new Symbol(sym.NIL, yyline, yycolumn) ;}
 "<"             { return new Symbol(sym.INF, yyline, yycolumn) ;}
 "<="            { return new Symbol(sym.INF_EQUALS, yyline, yycolumn) ;}
@@ -68,6 +68,7 @@ outout      = "OUTPUT"|"output"
 {mod}		    { return new Symbol(sym.MOD, yyline, yycolumn) ;}
 "*"			    { return new Symbol(sym.MUL, yyline, yycolumn) ;}
 ";"			    { return new Symbol(sym.SEMI, yyline, yycolumn) ;}
+"."             { return new Symbol(sym.DOT, yyline, yycolumn) ;}
 "="			    { return new Symbol(sym.EQUALS, yyline, yycolumn) ;}
 {chiffre}+	    { return new Symbol(sym.ENTIER, yyline, yycolumn, new Integer(yytext())) ;}
 {variable}	    { return new Symbol(sym.IDENT, yyline, yycolumn, new String(yytext())) ;}
