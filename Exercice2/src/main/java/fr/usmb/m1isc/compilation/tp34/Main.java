@@ -4,7 +4,6 @@ import java_cup.runtime.Symbol;
 
 import java.io.FileReader;
 import java.io.InputStreamReader;
-import java.nio.file.Paths;
 
 public class Main {
 
@@ -18,11 +17,11 @@ public class Main {
 		parser p = new parser (yy);
 		Symbol s = p.parse( );
 		Arbre arbre = (Arbre)s.value;
-		System.out.println(arbre);
+
+		System.err.println("Arbre abstrait :");
+		System.err.println(arbre);
 
 		GeneratorAsm asm = new GeneratorAsm(arbre);
 		System.out.println(asm.generateAsm());
-		// asm.saveAsmFile(Paths.get("D:\\Java\\Scolaire\\Master 1\\INFO703_TP3-4\\generated.asm"));
-		asm.saveAsmFile(Paths.get("S:\\Java\\Scolaire\\M1_INFO\\INFO703_TP3-4\\generated.asm"));
 	}
 }
