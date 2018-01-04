@@ -11,7 +11,7 @@ action code {:
 
  
 parser code {:
-    // Pour le parser (redefinition de la methode reportant les erreurs d'analyse)
+    // Pour le parser (redéfinition de la méthode reportant les erreurs d'analyse)
   public void report_error(String message, Object info) {
  	String m = "";
  	if (info instanceof java_cup.runtime.Symbol) {
@@ -31,7 +31,7 @@ parser code {:
 :};
 
 /* Symboles terminaux */
-terminal PLUS, MOINS, MOINS_UNAIRE, MUL, DIV, MOD, PAR_G, PAR_D, SEMI, DOT, ERROR, EQUALS, LET, IF, THEN, ELSE, WHILE, DO, NOT, AND, OR, INF, INF_EQUALS, NIL, OUTPUT, INPUT;
+terminal PLUS, MOINS, MOINS_UNAIRE, MUL, DIV, MOD, PAR_G, PAR_D, SEMI, DOT, ERROR, LET, IF, THEN, ELSE, WHILE, DO, NOT, AND, OR, EQUALS, INF, INF_EQUALS, NIL, OUTPUT, INPUT;
 terminal Integer ENTIER;
 terminal String IDENT, CST;
 
@@ -60,7 +60,9 @@ programme	::= expression:e DOT                                        {: RESULT 
 // Ensemble des expressions reconnues par le langage lambada.
 expression 	::=
               // Structuration des expressions
+              // Les expressions sont séparées par un point virgule (SEMI)
                 expression:e1 SEMI expression:e2                        {: RESULT = new Arbre(Type.SEMI, e1, e2); :}
+              // Les expressions peuvent être parenthésées.
               | PAR_G expression:e PAR_D                                {: RESULT = e ; :}
 
               // Assignation
@@ -68,7 +70,7 @@ expression 	::=
 
               // Structures conditionnelles
               | IF expression:cond THEN expression:t ELSE expression:f  {: RESULT = new Arbre(Type.IF, cond, new Arbre(Type.THEN, t, f)); :}
-              | WHILE expression:cond DO expression:d                   {: RESULT = new Arbre(Type.WHILE, cond, d); :}
+              | WHILE expression:cond DO expression:body                {: RESULT = new Arbre(Type.WHILE, cond, body); :}
 
               // Opérations arithmétiques
 			  | expression:e1 PLUS expression:e2                        {: RESULT = new Arbre(Type.PLUS, e1, e2) ; :}

@@ -23,7 +23,7 @@ import java_cup.runtime.Symbol;
 
 variable    = [a-zA-Z][0-9a-zA-Z]*
 chiffre 	= [0-9]
-espace 		= \s+|\t+
+espace 		= \s+|\t+|\r+
 mod 		= "mod"|"MOD"
 commentaire = \/\*.*\*\/|\/\/.*
 let         = "LET"|"let"
